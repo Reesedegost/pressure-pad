@@ -1,0 +1,56 @@
+#include <Stepper.h>
+
+const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
+// for your motor
+
+// initialize the stepper library on pins 8 through 11:
+Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+
+int toggleOnButtonPin=11;
+int enableAPin=4;
+int enableBPin=7;
+int starttime=0;
+int totaltime=20000;
+int endtime=0;
+int loopcounter=0;
+
+void setup() {
+  // set the speed at 60 rpm:
+  myStepper.setSpeed(60);
+  // initialize the serial port:
+  Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(toggleOnButtonPin, INPUT);
+  pinMode(enableAPin, OUTPUT);
+  pinMode(enableBPin, OUTPUT);
+}
+
+void loop() {
+  // turn off the LED, wait 100 milliseconds and then turn LED on
+  //digitalWrite(LED_BUILTIN, LOW);
+  //delay(100)
+  digitalWrite(enableAPin, LOW);
+  digitalWrite(enableBPin, LOW);
+  Serial.println(digitalRead(toggleOnButtonPin) + 'is button value');
+  //active low togglepin
+  if(digitalRead(toggleOnButtonPin) == LOW) 
+  {
+  Serial.println("button pushed");
+  digitalWrite(enableAPin, HIGH);
+  digitalWrite(enableBPin, HIGH);
+  loopcounter=0; 
+  //loop executes for totaltime
+  starttime=millis();
+  endtime=starttime;
+  Serial.println("start ");
+  while ((endtime-starttime) <= (totaltime + 1000))
+      {
+      digitalWrite(LED_BUILTIN, HIGH);
+      // step one revolution  in one direction:
+      Serial.println(loopcounter);
+      myStepper.step(stepsPerRevolution);
+      endtime=millis();
+      loopcounter=loopcounter + 1;
+      }
+  } 
+}
